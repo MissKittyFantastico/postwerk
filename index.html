@@ -108,6 +108,26 @@
   .tasten { display: grid; grid-template-columns: repeat(3, 56px); gap: 6px; justify-content: center; margin: 10px 0; }
   .tasten button { height: 48px; }
   .ergebnis img { width: 100%; border-radius: var(--r); display: block; margin: 10px 0; }
+  /* Elemente der Bibliothek (Einfügen, Austauschen): Kacheln auf Mittelgrau, damit helle und
+     dunkle Farbvarianten gleich gut zu sehen sind */
+  .wahlkopf { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 2px 0 8px; }
+  .filter { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  .filter select { width: 100%; min-width: 0; padding: 0 10px; }
+  input[type=search] { width: 100%; min-height: 44px; padding: 0 12px; margin-bottom: 10px; border-radius: var(--r);
+    border: 1px solid var(--line-hell); background: var(--panel); font-size: 16px; }
+  .elementraster { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+  .elementraster.breit { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .elementraster.eins { grid-template-columns: 1fr; } /* Bausteine: Vorschau bis 240 px breit */
+  .element { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; padding: 8px 4px 6px;
+    border-radius: var(--r); border: 2px solid transparent; background: var(--stage); color: #fff; }
+  .element[aria-current="true"] { border-color: var(--akzent-hell); }
+  .element img { width: 100%; height: 56px; object-fit: contain; }
+  .element small { font-size: 11px; line-height: 1.25; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .element.zeile { width: 100%; align-items: flex-start; padding: 10px 12px; margin-bottom: 6px; background: var(--panel-2); border-color: var(--line); color: var(--text); text-align: left; }
+  .element.zeile small { color: var(--dim); }
+  /* Vorschau eines Bausteins: verkleinerter Inhalt ab der linken oberen Ecke (kein Zentrieren nach
+     der unverkleinerten Breite – das schnitt links ab) */
+  .baustein-buehne { overflow: hidden; flex: none; max-width: 100%; }
   .zeilen { display: flex; gap: 8px; flex-wrap: wrap; }
 
   /* Meldungen und Dialog (kern.js) */

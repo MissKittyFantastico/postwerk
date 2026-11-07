@@ -6,7 +6,9 @@
  *
  * Daten:
  *   daten/vorlagen.json  mitgelieferte Vorlagen (ohne Beispielfotos), gebaut mit werkzeuge/mobil-bauen.js
- *   daten/medien.json    Grafiken der Vorlagen als data:-Adressen { name: daten }
+ *   daten/medien.json    Grafiken der Vorlagen, Logos und Badges als data:-Adressen { name: daten }
+ *   daten/baukasten.json Baukasten wie am Rechner, dazu „passend“ (Symbolgrafik → Farbvariante)
+ *   daten/symbole/…      Symbolbibliothek je Farbvariante und Füllung, erst bei Bedarf geladen
  *   IndexedDB            Entwürfe, am Handy geänderte Vorlagen, eigene Fotos, Einstellungen (speicher.js)
  *
  * Muss vor kern.js geladen werden (kern.js liest window.postwerk beim Laden): erst
@@ -24,7 +26,7 @@ const sicher = (fn) => async (...a) => { try { return ok(await fn(...a)); } catc
 const tief = (o) => JSON.parse(JSON.stringify(o));
 const neueId = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 
-const stand = { mitgeliefert: new Map(), medien: new Map(), fotos: new Map(), markenset: null };
+const stand = { mitgeliefert: new Map(), medien: new Map(), fotos: new Map(), markenset: null, baukasten: null, symbolPaket: new Map(), pakete: new Map() };
 
 async function json(url) {
   const r = await fetch(url);
@@ -34,12 +36,14 @@ async function json(url) {
 
 /** Mitgelieferte Vorlagen, Grafiken, Markenset und eigene Fotos laden. */
 export async function bereit() {
-  const [vorlagen, medien, tokens, mass, symbole] = await Promise.all([
-    json(new URL('vorlagen.json', DATEN)), json(new URL('medien.json', DATEN)),
+  const [vorlagen, medien, baukasten, tokens, mass, symbole] = await Promise.all([
+    json(new URL('vorlagen.json', DATEN)), json(new URL('medien.json', DATEN)), json(new URL('baukasten.json', DATEN)),
     json(new URL('tokens.json', DESIGNSET)), json(new URL('massvorgaben.json', DESIGNSET)), json(new URL('symbole-index.json', DESIGNSET)),
   ]);
   for (const v of vorlagen) stand.mitgeliefert.set(v.id, v);
   for (const [n, d] of Object.entries(medien)) stand.medien.set(n, d);
+  stand.baukasten = baukasten;
+  for (const [schluessel, m] of Object.entries(baukasten.symbole.dateien)) stand.symbolPaket.set(m, schluessel.split('|').slice(0, 2).join('-'));
   stand.markenset = markensetAufbauen(tokens, mass, symbole);
   await fotosAufraeumen();
   for (const name of await speicher.schluessel('fotos')) {
@@ -57,6 +61,29 @@ async function fotosAufraeumen() {
     JSON.stringify(e, (k, w) => { if (k === 'medium' && typeof w === 'string') genutzt.add(w); return w; });
   }
   for (const name of await speicher.schluessel('fotos')) if (!genutzt.has(name)) await speicher.entfernen('fotos', name);
+}
+
+/** Symbolpaket (z. B. „07-mit“) laden; seine Grafiken stehen danach über medienUrl bereit. */
+function symbolPaket(paket) {
+  if (!stand.pakete.has(paket)) {
+    const laden = json(new URL(`symbole/${paket}.json`, DATEN)).then((inhalt) => {
+      for (const [n, svg] of Object.entries(inhalt)) stand.medien.set(n, 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
+    });
+    laden.catch(() => stand.pakete.delete(paket)); // beim nächsten Mal neu versuchen
+    stand.pakete.set(paket, laden);
+  }
+  return stand.pakete.get(paket);
+}
+
+/** Symbolgrafiken, die Entwürfe oder Vorlagen nutzen, vor dem Zeichnen laden. */
+async function medienSichern(daten) {
+  const pakete = new Set();
+  JSON.stringify(daten, (k, w) => {
+    if (k === 'medium' && typeof w === 'string' && !stand.medien.has(w) && stand.symbolPaket.has(w)) pakete.add(stand.symbolPaket.get(w));
+    return w;
+  });
+  await Promise.all([...pakete].map(symbolPaket));
+  return daten;
 }
 
 /** Adresse eines Mediums: eigenes Foto (Blob) oder mitgelieferte Grafik. */
@@ -92,7 +119,7 @@ const postwerk = {
       const eigen = new Map((await speicher.alle('vorlagen')).map((v) => [v.id, v]));
       const liste = [...stand.mitgeliefert.values()].map((v) => tief(eigen.get(v.id) || v));
       for (const [id, v] of eigen) if (!stand.mitgeliefert.has(id)) liste.push(tief(v));
-      return liste;
+      return medienSichern(liste);
     }),
     speichern: sicher(async (vorlage, grund) => {
       if (!vorlage || !vorlage.name) throw new Error('Die Vorlage braucht einen Namen.');
@@ -112,8 +139,8 @@ const postwerk = {
     }),
   },
   entwuerfe: {
-    liste: sicher(async () => (await speicher.alle('entwuerfe')).map(entwurfKurz).sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)))),
-    holen: sicher(async (id) => (await speicher.holen('entwuerfe', id)) || null),
+    liste: sicher(async () => medienSichern((await speicher.alle('entwuerfe')).map(entwurfKurz).sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt))))),
+    holen: sicher(async (id) => medienSichern((await speicher.holen('entwuerfe', id)) || null)),
     speichern: sicher(async (entwurf) => {
       const e = tief(entwurf);
       if (!e.id) e.id = neueId('ent');
@@ -128,6 +155,12 @@ const postwerk = {
       await speicher.entfernen('entwuerfe', id);
       return { geloescht: id };
     }),
+  },
+  bibliothek: {
+    /** Baukasten wie am Rechner (pw.bibliothek.baukasten), dazu „passend“. */
+    baukasten: sicher(async () => stand.baukasten),
+    /** Symbole einer Farbvariante und Füllung laden (Nummer wie „07“, 'mit' | 'ohne'). */
+    symbole: sicher(async (nr, fuellung) => { await symbolPaket(`${nr}-${fuellung}`); return true; }),
   },
   medien: {
     /** Foto übernehmen (Blob oder ArrayBuffer). Rückgabe wie am Rechner: { name, medium }. */

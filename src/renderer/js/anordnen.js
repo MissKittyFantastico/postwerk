@@ -109,3 +109,34 @@ export function gruppieren(ebenen) {
 export function gruppeAufheben(ebenen) {
   for (const l of ebenen) delete l.verbund;
 }
+
+/** Ebene oben einfügen (ohne Kennung bekommt sie eine neue). Liefert die Ebene. */
+export function ebeneEinfuegen(v, neu) {
+  if (!neu.id) neu.id = 'e' + neueId('');
+  v.layers.push(neu);
+  return neu;
+}
+
+/** Ebenen aus dem Entwurf entfernen, samt ihrer Texte im Inhalt. */
+export function ebenenEntfernen(e, ids) {
+  e.vorlage.layers = e.vorlage.layers.filter((x) => !ids.includes(x.id));
+  for (const id of ids) delete e.inhalt.texte[id];
+}
+
+/**
+ * Grafik austauschen: Die neue Grafik übernimmt Kennung, Fläche, Stapelplatz, Drehung,
+ * Deckkraft, Sperre und Gruppe der alten und wird in deren Fläche vollständig eingepasst.
+ * Liefert die neue Ebene (oder null, wenn es die alte nicht gibt).
+ */
+export function grafikTauschen(v, id, neu) {
+  const i = v.layers.findIndex((x) => x.id === id);
+  if (i < 0) return null;
+  const alt = v.layers[i];
+  const l = { ...neu, id: alt.id, box: { ...alt.box }, fit: 'contain' };
+  for (const k of ['clip', 'drehung', 'opacity', 'gesperrt', 'verbund']) {
+    if (alt[k] != null) l[k] = alt[k];
+    else delete l[k];
+  }
+  v.layers[i] = l;
+  return l;
+}

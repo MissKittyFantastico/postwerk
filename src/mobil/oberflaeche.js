@@ -1,24 +1,25 @@
 /**
  * Oberfläche der Handy-Fassung: Vorlagen finden, Entwurf füllen (Texte, Fotos mit Ausschnitt),
- * Format, Fotostil und Seite wechseln, Layout per Finger ändern, Bild sichern und teilen.
+ * Format, Fotostil und Seite wechseln, Layout per Finger ändern, Symbole und Elemente aus dem
+ * Baukasten einfügen, austauschen und löschen, Bild sichern und teilen.
  *
  * Die Logik stammt aus den Modulen der Anwendung – hier steht nur die Bedienung für Finger:
  *   satz.js (Fassungen, Seiten, Übertragen), entwurf.js (Sichern, Widerrufen), darstellung.js,
  *   ausschnitt.js (Bildausschnitt), einrasten.js, anordnen.js (Ziehen, Größe), feldhinweis.js,
- *   anlaesse.js (Kacheln), bildausgabe.js (Bild im Browser).
+ *   anlaesse.js (Kacheln), baukasten.js (Elemente der Bibliothek), bildausgabe.js (Bild im Browser).
  */
 import { starten } from './start.js';
 import { schriftenEinrichten } from './schriften.js';
 import { bildErzeugen } from './bildausgabe.js';
 import { THEMEN, einordnen } from '../gemeinsam/anlaesse.js';
 import { FORMATE, formatSchluessel } from '../gemeinsam/formate.js';
-import { istFotofeld } from '../gemeinsam/ebenen.js';
+import { istFotofeld, istGrafik } from '../gemeinsam/ebenen.js';
 import { ausschnittVerschieben, ausschnittAnwenden } from '../renderer/js/ausschnitt.js';
 import { fanglinien, einrasten } from '../renderer/js/einrasten.js';
 import { feldHinweis } from '../renderer/js/feldhinweis.js';
 import { vergleichen, bewerten } from './vergleich.js';
 
-let K; let E; let S; let D; let A; // kern, entwurf, satz, darstellung, anordnen
+let K; let E; let S; let D; let A; let B; // kern, entwurf, satz, darstellung, anordnen, baukasten
 const $ = (s, w = document) => w.querySelector(s);
 /** Kinder setzen; leere Einträge (null, false) entfallen statt als Text „null“ zu erscheinen. */
 const setzen = (ziel, ...kinder) => ziel.replaceChildren(...kinder.flat().filter((k) => k != null && k !== false));
@@ -195,13 +196,14 @@ function neuerEntwurf(vorlage) {
 /* Studio                                                              */
 /* ------------------------------------------------------------------ */
 
-const st = { reiter: 'texte', auswahl: null, aufbau: null, skala: 1, buehne: null, inhalt: null, griffe: null, panel: null, rueck: null, zeichnenGeplant: false };
+const st = { reiter: 'texte', auswahl: null, wahl: null, letzteVariante: null, aufbau: null, skala: 1, buehne: null, inhalt: null, griffe: null, panel: null, rueck: null, zeichnenGeplant: false };
 
 function studioStarten(e) {
   K.zustand.entwurf = e;
   E.verlaufStarten(e);
   st.reiter = 'texte';
   st.auswahl = null;
+  st.wahl = null;
   st.rueck = ansicht.bereich === 'studio' ? st.rueck : ansicht.bereich;
   history.pushState({ studio: true }, '');
   zeigen('studio');
@@ -239,7 +241,7 @@ function studioZeichnen() {
     chipReihe(a.fotostile, w.fotostil, (s) => s, (s) => ({ ...w, seite: e.seite, fotostil: s })),
     chipReihe(a.seiten, e.seite, (n) => `Seite ${n}`, (n) => ({ ...w, seite: n })),
     K.el('div', { class: 'reiter', role: 'tablist' }, [['texte', 'Texte'], ['fotos', 'Fotos'], ['layout', 'Layout'], ['sichern', 'Bild']].map(([k, t]) =>
-      K.el('button', { role: 'tab', 'aria-selected': String(st.reiter === k), text: t, onclick: () => { st.reiter = k; st.auswahl = null; studioZeichnen(); } }))),
+      K.el('button', { role: 'tab', 'aria-selected': String(st.reiter === k), text: t, onclick: () => { st.reiter = k; st.auswahl = null; st.wahl = null; studioZeichnen(); } }))),
     st.panel,
   );
   buehneAufbauen();
@@ -250,6 +252,7 @@ function wechseln(w) {
   const e = K.zustand.entwurf;
   if (!S.wechseln(e, w)) return;
   st.auswahl = null;
+  st.wahl = null;
   E.geaendert();
   studioZeichnen();
 }
@@ -294,6 +297,14 @@ function griffeZeichnen(fang = null) {
   if (!e) return;
 }
 
+/** Ebene wählen (oder keine). Eine offene Auswahl zum Austauschen gehört zur alten Ebene und schließt. */
+function auswaehlen(id) {
+  st.auswahl = id;
+  if (st.wahl && st.wahl.tauschen) st.wahl = null;
+  griffeZeichnen();
+  panelZeichnen();
+}
+
 /** Gewählte Ebenen: im Layout die Ebene samt Verbund, bei Fotos die Bildebenen der Gruppe. */
 function gewaehlteEbenen() {
   const e = K.zustand.entwurf;
@@ -335,8 +346,8 @@ function buehnenZeiger(ev) {
   const p = punkt(ev);
   const ecke = ev.target.dataset && ev.target.dataset.ecke;
   let l = ecke ? e.vorlage.layers.find((x) => x.id === st.auswahl) : treffer(p, st.reiter === 'fotos');
-  if (!l) { st.auswahl = null; griffeZeichnen(); panelZeichnen(); return aufraeumen(); }
-  if (st.auswahl !== l.id && !ecke) { st.auswahl = l.id; griffeZeichnen(); panelZeichnen(); }
+  if (!l) { auswaehlen(null); return aufraeumen(); }
+  if (st.auswahl !== l.id && !ecke) auswaehlen(l.id);
   const start = { mx: ev.clientX, my: ev.clientY };
   let bewegt = false;
   let bewegen;
@@ -548,13 +559,14 @@ async function fotoVorbereiten(datei) {
 }
 
 function layoutPanel() {
+  if (st.wahl) return wahlPanel();
   const e = K.zustand.entwurf;
   const teile = [];
   const ebenen = gewaehlteEbenen();
   const auswahl = K.el('select', { class: 'knopf', style: 'width:100%' }, [K.el('option', { value: '', text: 'Ebene wählen …' }),
     ...e.vorlage.layers.slice().reverse().filter((l) => !l.versteckt).map((l) => K.el('option', { value: l.id, text: l.name || l.id, selected: l.id === st.auswahl }))]);
-  auswahl.addEventListener('change', () => { st.auswahl = auswahl.value || null; griffeZeichnen(); panelZeichnen(); });
-  teile.push(K.el('p', { class: 'hinweis', text: 'Ebene auf der Vorschau antippen und ziehen; der runde Griff ändert die Größe. Kanten rasten an Rändern, Mitte und anderen Ebenen ein (rosa Linien).' }), auswahl);
+  auswahl.addEventListener('change', () => auswaehlen(auswahl.value || null));
+  teile.push(K.el('p', { class: 'hinweis', text: 'Ebene auf der Vorschau antippen und ziehen; der runde Griff ändert die Größe. Kanten rasten an Rändern, Mitte und anderen Ebenen ein (rosa Linien). Symbole lassen sich austauschen, Elemente aus der Bibliothek einfügen.' }), auswahl);
   if (ebenen.length) {
     const b = A.huelle(ebenen.map((l) => l.box));
     let schritt = 2;
@@ -573,6 +585,12 @@ function layoutPanel() {
       K.el('div', { class: 'tasten' }, [K.el('span'), t('↑', 0, -1), K.el('span'), t('←', -1, 0), weite, t('→', 1, 0), K.el('span'), t('↓', 0, 1), K.el('span')]),
     );
   }
+  const gewaehlt = st.auswahl && e.vorlage.layers.find((x) => x.id === st.auswahl);
+  teile.push(K.el('div', { class: 'zeilen', style: 'margin-top:12px' }, [
+    K.el('button', { class: 'knopf', text: '+ Element einfügen', onclick: () => elementWahl(false) }),
+    gewaehlt && istGrafik(gewaehlt) ? K.el('button', { class: 'knopf', text: 'Austauschen', onclick: () => elementWahl(true) }) : null,
+    ebenen.length ? K.el('button', { class: 'knopf still gefahr', text: ebenen.length > 1 ? `${ebenen.length} Ebenen löschen` : 'Löschen', onclick: ebenenLoeschen }) : null,
+  ]));
   const offen = e.layoutGeaendert || S.weitereLayouts(e).length;
   teile.push(K.el('div', { class: 'zeilen', style: 'margin-top:12px' }, [
     K.el('button', { class: 'knopf', text: 'In Vorlage speichern', disabled: !offen, onclick: async () => {
@@ -586,6 +604,132 @@ function layoutPanel() {
     } }),
   ]));
   return teile;
+}
+
+/* ------------------------- Elemente (Baukasten) ------------------------- */
+
+const BEREICHE = { symbole: 'Symbole', bilder: 'Logos & Badges', textrollen: 'Textrollen', bausteine: 'Bausteine' };
+
+/**
+ * Auswahl der Bibliothek öffnen: neues Element einfügen oder die gewählte Grafik austauschen.
+ * Beim Austauschen eines Symbols ist seine Farbvariante vorgewählt – bei Symbolen der Vorlagen
+ * die passende aus werkzeuge/symbol-passend.js (Entscheidung der Nutzerin 07.11.2026).
+ */
+async function elementWahl(tauschen) {
+  const b = await B.baukastenLaden();
+  if (!b) return;
+  const e = K.zustand.entwurf;
+  const l = tauschen ? e.vorlage.layers.find((x) => x.id === st.auswahl) : null;
+  const [nr, fuellung] = ((l && (l.symbolVariante || b.passend[l.medium])) || st.letzteVariante || '01|mit').split('|');
+  st.wahl = { b, tauschen: l ? l.id : null, bereich: l && !l.symbol ? 'bilder' : 'symbole', nr, fuellung, kategorie: '', suche: '' };
+  panelZeichnen();
+  $('#ansicht').scrollTop = st.panel.offsetTop - 60;
+}
+
+function wahlPanel() {
+  const w = st.wahl;
+  const v = K.zustand.entwurf.vorlage;
+  const bereiche = w.tauschen ? ['symbole', 'bilder'] : Object.keys(BEREICHE);
+  const teile = [
+    K.el('div', { class: 'wahlkopf' }, [
+      K.el('b', { text: w.tauschen ? 'Austauschen gegen …' : 'Element einfügen' }),
+      K.el('button', { class: 'knopf klein still', text: 'Abbrechen', onclick: () => { st.wahl = null; panelZeichnen(); } }),
+    ]),
+    K.el('div', { class: 'chips' }, bereiche.map((k) => K.el('button', { class: 'chip', 'aria-pressed': String(w.bereich === k), text: BEREICHE[k], onclick: () => { w.bereich = k; panelZeichnen(); } }))),
+  ];
+  if (w.bereich === 'symbole') {
+    const s = w.b.symbole;
+    const raster = K.el('div', { class: 'elementraster' });
+    const variante = K.el('select', { class: 'knopf', 'aria-label': 'Farbvariante' }, s.varianten.map((x) => K.el('option', { value: x.nr, text: `${x.nr} · ${x.name}`, selected: x.nr === w.nr })));
+    variante.addEventListener('change', () => { w.nr = variante.value; symboleZeigen(raster); });
+    const kategorie = K.el('select', { class: 'knopf', 'aria-label': 'Kategorie' }, [K.el('option', { value: '', text: 'Alle Kategorien' }), ...s.kategorien.map((k) => K.el('option', { value: k.name, text: k.name, selected: k.name === w.kategorie }))]);
+    kategorie.addEventListener('change', () => { w.kategorie = kategorie.value; symboleZeigen(raster); });
+    const suche = K.el('input', { type: 'search', value: w.suche, placeholder: 'Suchen, z. B. verschmust', 'aria-label': 'Symbole durchsuchen' });
+    suche.addEventListener('input', () => { w.suche = suche.value; symboleZeigen(raster); });
+    const fuellung = K.el('div', { class: 'chips' }, [['mit', 'mit Füllung'], ['ohne', 'ohne Füllung']].map(([k, text]) =>
+      K.el('button', { class: 'chip', 'aria-pressed': String(w.fuellung === k), text, onclick: (ev) => {
+        w.fuellung = k;
+        for (const c of ev.currentTarget.parentNode.children) c.setAttribute('aria-pressed', String(c === ev.currentTarget));
+        symboleZeigen(raster);
+      } })));
+    teile.push(K.el('div', { class: 'filter' }, [variante, kategorie]), fuellung, suche, raster);
+    symboleZeigen(raster);
+  } else if (w.bereich === 'bilder') {
+    const teil = (x, titel) => K.el('button', { class: 'element', 'aria-label': titel, onclick: () => elementSetzen(B.bildEbene(v, x, titel)) }, [
+      K.el('img', { src: K.medienUrl(x.medium), alt: '' }), K.el('small', { text: titel })]);
+    teile.push(
+      K.el('h2', { class: 'mikro', text: 'Logos' }), K.el('div', { class: 'elementraster breit' }, w.b.logos.map((x) => teil(x, B.logoTitel(x)))),
+      K.el('h2', { class: 'mikro', text: 'Badges' }), K.el('div', { class: 'elementraster breit' }, w.b.badges.map((x) => teil(x, B.badgeTitel(x)))),
+    );
+  } else if (w.bereich === 'textrollen') {
+    teile.push(K.el('p', { class: 'hinweis', text: 'Neues Textfeld in einer Schriftrolle des Designsets. Den Text danach unter „Texte“ eintragen.' }));
+    for (const rolle of w.b.textrollen) {
+      teile.push(K.el('button', { class: 'element zeile', onclick: () => elementSetzen(B.textrollenEbene(v, rolle)) }, [
+        B.textrollenMuster(rolle), K.el('small', { text: `${rolle.family} ${rolle.weight} · ${rolle.size} px` })]));
+    }
+  } else {
+    for (const [name, liste] of B.bausteinGruppen(w.b)) {
+      teile.push(K.el('h2', { class: 'mikro', text: `${name} (${liste.length})` }), K.el('div', { class: 'elementraster eins' }, liste.map((x) =>
+        K.el('button', { class: 'element', 'aria-label': `${name} aus ${x.quelle}`, onclick: () => elementSetzen(B.bausteinEbene(v, x)) }, [B.bausteinVorschau(x), K.el('small', { text: x.quelle })]))));
+    }
+  }
+  return teile;
+}
+
+/** Symbole der gewählten Farbvariante, Füllung, Kategorie und Suche zeigen (Paket erst laden). */
+async function symboleZeigen(raster) {
+  const w = st.wahl;
+  const stand = `${w.nr}|${w.fuellung}`;
+  setzen(raster, K.el('p', { class: 'hinweis', text: 'Symbole werden geladen …' }));
+  const r = await pw().bibliothek.symbole(w.nr, w.fuellung);
+  if (st.wahl !== w || `${w.nr}|${w.fuellung}` !== stand) return; // inzwischen anders gewählt
+  if (!K.pruefe(r, 'Die Symbole konnten nicht geladen werden')) return setzen(raster);
+  const s = w.b.symbole;
+  const v = K.zustand.entwurf.vorlage;
+  const alt = w.tauschen && v.layers.find((x) => x.id === w.tauschen);
+  const knoepfe = [];
+  for (const k of s.kategorien) {
+    if (w.kategorie && k.name !== w.kategorie) continue;
+    for (const sym of k.symbole) {
+      const medium = s.dateien[`${w.nr}|${w.fuellung}|${sym.id}`];
+      if (!medium || !B.symbolTrifft(sym, w.suche)) continue;
+      knoepfe.push(K.el('button', {
+        class: 'element', 'aria-label': `Symbol ${sym.id}: ${sym.bedeutung.join(', ')}`, 'aria-current': String(Boolean(alt && alt.medium === medium)),
+        onclick: () => elementSetzen(B.symbolEbene(v, s, sym, w.nr, w.fuellung)),
+      }, [K.el('img', { src: K.medienUrl(medium), alt: '' }), K.el('small', { text: sym.bedeutung[0] || sym.id })]));
+    }
+  }
+  setzen(raster, knoepfe.length ? knoepfe : K.el('p', { class: 'hinweis', text: 'Kein Symbol gefunden.' }));
+}
+
+/** Gewähltes Element einsetzen: die Grafik austauschen oder als neue Ebene oben einfügen. */
+function elementSetzen(neu) {
+  const e = K.zustand.entwurf;
+  const w = st.wahl;
+  const l = w.tauschen ? A.grafikTauschen(e.vorlage, w.tauschen, neu) : A.ebeneEinfuegen(e.vorlage, neu);
+  st.wahl = null;
+  if (!l) { K.meldung('Ebene nicht mehr vorhanden', 'Bitte die Grafik noch einmal antippen.'); return panelZeichnen(); }
+  if (neu.symbolVariante) st.letzteVariante = neu.symbolVariante;
+  st.auswahl = l.id;
+  E.geaendert({ layout: true });
+  buehneAufbauen();
+  panelZeichnen();
+  $('#ansicht').scrollTop = 0; // Ergebnis auf der Vorschau zeigen
+  if (w.tauschen) K.gut('Ausgetauscht', 'An derselben Stelle in derselben Größe. ↶ macht es rückgängig.');
+  else K.gut('Eingefügt', l.type === 'text' ? 'In der Mitte – zum Verschieben ziehen, den Text unter „Texte“ eintragen.' : 'In der Mitte – zum Verschieben auf der Vorschau ziehen.');
+}
+
+/** Gewählte Ebene (samt Gruppe) löschen; ↶ holt sie zurück. */
+function ebenenLoeschen() {
+  const e = K.zustand.entwurf;
+  const teile = gewaehlteEbenen();
+  if (teile.some((x) => x.gesperrt)) return K.meldung('Ebene ist gesperrt', 'Gesperrte Ebenen lassen sich nicht löschen.');
+  A.ebenenEntfernen(e, teile.map((x) => x.id));
+  st.auswahl = null;
+  E.geaendert({ layout: true });
+  buehneAufbauen();
+  panelZeichnen();
+  K.gut(teile.length > 1 ? `${teile.length} Ebenen gelöscht` : 'Gelöscht', 'Mit ↶ oben lässt es sich zurückholen.');
 }
 
 /* ------------------------------ Bild ------------------------------ */
@@ -731,6 +875,7 @@ async function los() {
     const m = await starten();
     K = m.kern; E = m.entwurf; S = m.satz; D = m.darstellung;
     A = await import('../renderer/js/anordnen.js');
+    B = await import('../renderer/js/baukasten.js');
     await schriftenEinrichten();
     E.beiVerlaufGeaendert(({ wiederhergestellt }) => {
       verlaufKnoepfe();
