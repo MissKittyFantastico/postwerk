@@ -1,0 +1,105 @@
+{
+ "stand": "2026-10-18",
+ "formate": {
+  "instagram-feed-portrait": {
+   "width": 1080,
+   "height": 1350,
+   "einsatz": "alle Katzen-Kacheln, Karussells, Kampagnen (aktuelles Hauptformat)"
+  },
+  "instagram-story": {
+   "width": 1080,
+   "height": 1920,
+   "sicherheitszone": {
+    "oben": 285,
+    "unten": 285
+   },
+   "hinweis": "Eigene Story-Designs sowie kachel-* (Feed-Kachel 1080×1350 mittig bei y=285, Fläche in Kachelfarbe)."
+  }
+ },
+ "raster": {
+  "randLinks": 70,
+  "randLinksHeadline": 66,
+  "randRechts": 70,
+  "kopfzeileOben": 56,
+  "handleUnten": 52,
+  "hinweis": "x-Positionen 70 / 66 / 64 sind die häufigsten linken Kanten (gemessen)."
+ },
+ "mindestwerte": {
+  "schriftgroesse": 26,
+  "schriftgroessePruefgrenze": 25,
+  "hinweis": "Auf 1080er-Designs nie unter ~26 px."
+ },
+ "fotoStile": {
+  "Vollbild": {
+   "fit": "cover",
+   "flaeche": "formatfüllend"
+  },
+  "Mittel": {
+   "hintergrund": {
+    "fit": "cover",
+    "filter": "blur(30px) saturate(1.25) brightness(.82)",
+    "transform": "scale(1.16)"
+   },
+   "overlay": {
+    "hex": "#15205B",
+    "alpha": 0.22
+   },
+   "vordergrund": {
+    "fit": "contain",
+    "rand": 10
+   }
+  },
+  "Blur-Fill": {
+   "hintergrund": {
+    "fit": "cover",
+    "filter": "blur(34px) saturate(1.3) brightness(.8)",
+    "transform": "scale(1.18)"
+   },
+   "overlay": {
+    "hex": "#15205B",
+    "alpha": 0.26
+   },
+   "vordergrund": {
+    "fit": "contain",
+    "shape": "rounded",
+    "radius": 18,
+    "kleiner": "zentriert, ca. 75 % der Fläche"
+   }
+  },
+  "regel": "Alle Foto-Layer eines Fotos teilen dieselbe Quelle (Postwerk: sharedWith)."
+ },
+ "symbole": {
+  "viewBox": "0 0 150 130",
+  "strichstaerke": 7,
+  "flaechenVersatz": {
+   "standard": [
+    2.5,
+    3
+   ],
+   "pfotenabdruckP8": [
+    4,
+    5
+   ]
+  },
+  "svgExportViewBox": "-8 -8 166 146",
+  "typischeGroessen": {
+   "eigenschaft": "100×87",
+   "liste": "150×130",
+   "deko": "170–229 px breit"
+  }
+ },
+ "handle": {
+  "text": "@animal_help_espania",
+  "family": "Nunito Sans",
+  "size": 28,
+  "weight": 700,
+  "farbeAufDunkel": "#FFFFFF bzw. #FBF3E8",
+  "farbeAufHell": "#182A7C bzw. #C85F2E",
+  "regel": "kein Logo auf dem Foto"
+ },
+ "umbruchRegeln": [
+  "kein einzelnes Wort allein in der letzten Zeile",
+  "keine Trennung in Mailadressen, URLs, IBAN, Datum/Uhrzeit, Namen, Handle",
+  "Lösung: geschütztes Leerzeichen bzw. white-space:nowrap"
+ ]
+}

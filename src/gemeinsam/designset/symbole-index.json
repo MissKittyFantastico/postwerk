@@ -1,0 +1,762 @@
+{
+ "hinweis": "88 Symbole × 12 Farbvarianten × mit/ohne Füllung. viewBox -8 -8 166 146 (Zeichenfläche 0 0 150 130 + Rand für Strich und Versatz).",
+ "varianten": [
+  {
+   "nr": "01",
+   "name": "Navy · Orange auf Creme",
+   "fg": "#182A7C",
+   "acc": "#FF8C42",
+   "bg": "#FBF3E8",
+   "navy": false
+  },
+  {
+   "nr": "02",
+   "name": "Navy · Mint auf Creme",
+   "fg": "#182A7C",
+   "acc": "#B3DEC1",
+   "bg": "#FBF3E8",
+   "navy": false
+  },
+  {
+   "nr": "03",
+   "name": "Navy · Terrakotta auf Creme",
+   "fg": "#182A7C",
+   "acc": "#C85F2E",
+   "bg": "#FBF3E8",
+   "navy": false
+  },
+  {
+   "nr": "04",
+   "name": "Terrakotta · Orange auf Creme",
+   "fg": "#C85F2E",
+   "acc": "#FF8C42",
+   "bg": "#FBF3E8",
+   "navy": false
+  },
+  {
+   "nr": "05",
+   "name": "Navy · Creme auf Mint",
+   "fg": "#182A7C",
+   "acc": "#FBF3E8",
+   "bg": "#B3DEC1",
+   "navy": false
+  },
+  {
+   "nr": "06",
+   "name": "Navy · Orange auf Mint",
+   "fg": "#182A7C",
+   "acc": "#FF8C42",
+   "bg": "#B3DEC1",
+   "navy": false
+  },
+  {
+   "nr": "07",
+   "name": "Creme · Orange auf Navy",
+   "fg": "#FBF3E8",
+   "acc": "#FF8C42",
+   "bg": "#182A7C",
+   "navy": true
+  },
+  {
+   "nr": "08",
+   "name": "Mint · Orange auf Navy",
+   "fg": "#B3DEC1",
+   "acc": "#FF8C42",
+   "bg": "#182A7C",
+   "navy": true
+  },
+  {
+   "nr": "09",
+   "name": "Creme · Mint auf Navy",
+   "fg": "#FBF3E8",
+   "acc": "#B3DEC1",
+   "bg": "#182A7C",
+   "navy": true
+  },
+  {
+   "nr": "10",
+   "name": "Orange · Creme auf Navy",
+   "fg": "#FF8C42",
+   "acc": "#FBF3E8",
+   "bg": "#182A7C",
+   "navy": true
+  },
+  {
+   "nr": "11",
+   "name": "Navy · Creme auf Orange",
+   "fg": "#182A7C",
+   "acc": "#FBF3E8",
+   "bg": "#FF8C42",
+   "navy": false
+  },
+  {
+   "nr": "12",
+   "name": "Navy · Mint auf Orange",
+   "fg": "#182A7C",
+   "acc": "#B3DEC1",
+   "bg": "#FF8C42",
+   "navy": false
+  }
+ ],
+ "symbole": [
+  {
+   "id": "H26",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "verschmust",
+    "lieb",
+    "liebevoll"
+   ]
+  },
+  {
+   "id": "W1",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "verspielt",
+    "aktiv"
+   ]
+  },
+  {
+   "id": "H7",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "menschenbezogen",
+    "fröhlich",
+    "freundlich"
+   ]
+  },
+  {
+   "id": "P7",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "anhänglich",
+    "sanft"
+   ]
+  },
+  {
+   "id": "P8",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "zutraulich",
+    "sucht ein Zuhause"
+   ]
+  },
+  {
+   "id": "lupe",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "neugierig",
+    "aufgeweckt"
+   ]
+  },
+  {
+   "id": "sonne",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "sonniges Gemüt",
+    "gut gelaunt"
+   ]
+  },
+  {
+   "id": "mond",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "ruhig",
+    "gemütlich"
+   ]
+  },
+  {
+   "id": "versteckt",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "anfangs schüchtern",
+    "vorsichtig",
+    "braucht Zeit"
+   ]
+  },
+  {
+   "id": "blitz",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "temperamentvoll",
+    "lebhaft"
+   ]
+  },
+  {
+   "id": "haken",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "unkompliziert",
+    "stubenrein"
+   ]
+  },
+  {
+   "id": "katzesitzt",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "eigenständig",
+    "selbstbewusst"
+   ]
+  },
+  {
+   "id": "fisch",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "verfressen",
+    "liebt Leckerlis"
+   ]
+  },
+  {
+   "id": "sprechblase",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "gesprächig",
+    "kommunikativ"
+   ]
+  },
+  {
+   "id": "schlaf",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "schläft gern",
+    "Kuschelkissen-Fan"
+   ]
+  },
+  {
+   "id": "schnurr",
+   "kategorie": "Charakter",
+   "bedeutung": [
+    "schnurrt viel"
+   ]
+  },
+  {
+   "id": "zweikatzen",
+   "kategorie": "Verträglichkeit",
+   "bedeutung": [
+    "katzenverträglich"
+   ]
+  },
+  {
+   "id": "H21",
+   "kategorie": "Verträglichkeit",
+   "bedeutung": [
+    "sozial",
+    "verträglich"
+   ]
+  },
+  {
+   "id": "knochen",
+   "kategorie": "Verträglichkeit",
+   "bedeutung": [
+    "hundefreundlich"
+   ]
+  },
+  {
+   "id": "ball",
+   "kategorie": "Verträglichkeit",
+   "bedeutung": [
+    "kinderlieb",
+    "familientauglich"
+   ]
+  },
+  {
+   "id": "N3g",
+   "kategorie": "Haltung",
+   "bedeutung": [
+    "nur zusammen"
+   ]
+  },
+  {
+   "id": "S3",
+   "kategorie": "Haltung",
+   "bedeutung": [
+    "nicht in Einzelhaltung",
+    "Zweitkatze"
+   ]
+  },
+  {
+   "id": "krone",
+   "kategorie": "Haltung",
+   "bedeutung": [
+    "Einzelprinz(essin)",
+    "Einzelhaltung"
+   ]
+  },
+  {
+   "id": "haus",
+   "kategorie": "Haltung",
+   "bedeutung": [
+    "Wohnungshaltung",
+    "Zuhause gesucht"
+   ]
+  },
+  {
+   "id": "balkon",
+   "kategorie": "Haltung",
+   "bedeutung": [
+    "gesicherter Balkon"
+   ]
+  },
+  {
+   "id": "baum",
+   "kategorie": "Haltung",
+   "bedeutung": [
+    "Freigang"
+   ]
+  },
+  {
+   "id": "funkeln",
+   "kategorie": "Gesundheit",
+   "bedeutung": [
+    "kastriert"
+   ]
+  },
+  {
+   "id": "spritze",
+   "kategorie": "Gesundheit",
+   "bedeutung": [
+    "geimpft"
+   ]
+  },
+  {
+   "id": "chip",
+   "kategorie": "Gesundheit",
+   "bedeutung": [
+    "gechipt"
+   ]
+  },
+  {
+   "id": "test",
+   "kategorie": "Gesundheit",
+   "bedeutung": [
+    "FIV/FeLV getestet",
+    "negativ getestet"
+   ]
+  },
+  {
+   "id": "pflasterherz",
+   "kategorie": "Gesundheit",
+   "bedeutung": [
+    "besondere Bedürfnisse",
+    "Handicap"
+   ]
+  },
+  {
+   "id": "tierarzt",
+   "kategorie": "Gesundheit",
+   "bedeutung": [
+    "tierärztlich versorgt",
+    "entwurmt"
+   ]
+  },
+  {
+   "id": "pflaster",
+   "kategorie": "Gesundheit",
+   "bedeutung": [
+    "in Behandlung"
+   ]
+  },
+  {
+   "id": "flasche",
+   "kategorie": "Alter & Reise",
+   "bedeutung": [
+    "Kitten",
+    "Katzenkind"
+   ]
+  },
+  {
+   "id": "brille",
+   "kategorie": "Alter & Reise",
+   "bedeutung": [
+    "Senior",
+    "Seniorenkatze"
+   ]
+  },
+  {
+   "id": "flugzeug",
+   "kategorie": "Alter & Reise",
+   "bedeutung": [
+    "reisebereit",
+    "Ausreise"
+   ]
+  },
+  {
+   "id": "pin",
+   "kategorie": "Alter & Reise",
+   "bedeutung": [
+    "auf Pflegestelle in DE",
+    "Standort"
+   ]
+  },
+  {
+   "id": "koffer",
+   "kategorie": "Alter & Reise",
+   "bedeutung": [
+    "Umzug",
+    "Reisebox"
+   ]
+  },
+  {
+   "id": "kalender",
+   "kategorie": "Alter & Reise",
+   "bedeutung": [
+    "Termin",
+    "Ausreise am"
+   ]
+  },
+  {
+   "id": "katzenkopf",
+   "kategorie": "Katze & Alltag",
+   "bedeutung": [
+    "Katze"
+   ]
+  },
+  {
+   "id": "schnauze",
+   "kategorie": "Katze & Alltag",
+   "bedeutung": [
+    "Schnauze"
+   ]
+  },
+  {
+   "id": "fischgraete",
+   "kategorie": "Katze & Alltag",
+   "bedeutung": [
+    "Fischgräte"
+   ]
+  },
+  {
+   "id": "maus",
+   "kategorie": "Katze & Alltag",
+   "bedeutung": [
+    "Spielzeugmaus"
+   ]
+  },
+  {
+   "id": "angel",
+   "kategorie": "Katze & Alltag",
+   "bedeutung": [
+    "Spielangel"
+   ]
+  },
+  {
+   "id": "napf",
+   "kategorie": "Katze & Alltag",
+   "bedeutung": [
+    "Futternapf"
+   ]
+  },
+  {
+   "id": "kratzbaum",
+   "kategorie": "Katze & Alltag",
+   "bedeutung": [
+    "Kratzbaum"
+   ]
+  },
+  {
+   "id": "katzengras",
+   "kategorie": "Katze & Alltag",
+   "bedeutung": [
+    "Katzengras"
+   ]
+  },
+  {
+   "id": "glocke",
+   "kategorie": "Katze & Alltag",
+   "bedeutung": [
+    "Glöckchen"
+   ]
+  },
+  {
+   "id": "halsband",
+   "kategorie": "Katze & Alltag",
+   "bedeutung": [
+    "Halsband"
+   ]
+  },
+  {
+   "id": "euro",
+   "kategorie": "Aufruf & Spende",
+   "bedeutung": [
+    "Spende"
+   ]
+  },
+  {
+   "id": "sparschwein",
+   "kategorie": "Aufruf & Spende",
+   "bedeutung": [
+    "Patenschaft",
+    "Sparschwein"
+   ]
+  },
+  {
+   "id": "megafon",
+   "kategorie": "Aufruf & Spende",
+   "bedeutung": [
+    "Aufruf",
+    "dringend"
+   ]
+  },
+  {
+   "id": "gluehbirne",
+   "kategorie": "Aufruf & Spende",
+   "bedeutung": [
+    "Tipp",
+    "Ratgeber"
+   ]
+  },
+  {
+   "id": "brief",
+   "kategorie": "Aufruf & Spende",
+   "bedeutung": [
+    "Nachricht",
+    "schreib uns"
+   ]
+  },
+  {
+   "id": "pflegehand",
+   "kategorie": "Aufruf & Spende",
+   "bedeutung": [
+    "Pflegestelle gesucht"
+   ]
+  },
+  {
+   "id": "tanne",
+   "kategorie": "Anlässe · Weihnachten",
+   "bedeutung": [
+    "Tannenbaum"
+   ]
+  },
+  {
+   "id": "schneeflocke",
+   "kategorie": "Anlässe · Weihnachten",
+   "bedeutung": [
+    "Schneeflocke"
+   ]
+  },
+  {
+   "id": "kugel",
+   "kategorie": "Anlässe · Weihnachten",
+   "bedeutung": [
+    "Christbaumkugel"
+   ]
+  },
+  {
+   "id": "muetze",
+   "kategorie": "Anlässe · Weihnachten",
+   "bedeutung": [
+    "Weihnachtsmütze"
+   ]
+  },
+  {
+   "id": "kerze",
+   "kategorie": "Anlässe · Weihnachten",
+   "bedeutung": [
+    "Kerze"
+   ]
+  },
+  {
+   "id": "stern",
+   "kategorie": "Anlässe · Weihnachten",
+   "bedeutung": [
+    "Stern"
+   ]
+  },
+  {
+   "id": "geschenk",
+   "kategorie": "Anlässe · Weihnachten",
+   "bedeutung": [
+    "Geschenk"
+   ]
+  },
+  {
+   "id": "ei",
+   "kategorie": "Anlässe · Ostern",
+   "bedeutung": [
+    "Osterei"
+   ]
+  },
+  {
+   "id": "hase",
+   "kategorie": "Anlässe · Ostern",
+   "bedeutung": [
+    "Osterhase"
+   ]
+  },
+  {
+   "id": "kueken",
+   "kategorie": "Anlässe · Ostern",
+   "bedeutung": [
+    "Küken"
+   ]
+  },
+  {
+   "id": "tulpe",
+   "kategorie": "Anlässe · Ostern",
+   "bedeutung": [
+    "Tulpe"
+   ]
+  },
+  {
+   "id": "torte",
+   "kategorie": "Anlässe · Geburtstag",
+   "bedeutung": [
+    "Geburtstag",
+    "Torte"
+   ]
+  },
+  {
+   "id": "ballon",
+   "kategorie": "Anlässe · Geburtstag",
+   "bedeutung": [
+    "Luftballon",
+    "Feier"
+   ]
+  },
+  {
+   "id": "partyhut",
+   "kategorie": "Anlässe · Geburtstag",
+   "bedeutung": [
+    "Partyhut"
+   ]
+  },
+  {
+   "id": "konfetti",
+   "kategorie": "Anlässe · Geburtstag",
+   "bedeutung": [
+    "Konfetti",
+    "Jubiläum"
+   ]
+  },
+  {
+   "id": "regenbogen",
+   "kategorie": "Anlässe · Regenbogenbrücke",
+   "bedeutung": [
+    "Regenbogenbrücke"
+   ]
+  },
+  {
+   "id": "fluegelherz",
+   "kategorie": "Anlässe · Regenbogenbrücke",
+   "bedeutung": [
+    "in Erinnerung",
+    "über die Brücke gegangen"
+   ]
+  },
+  {
+   "id": "wolke",
+   "kategorie": "Anlässe · Regenbogenbrücke",
+   "bedeutung": [
+    "Wolke"
+   ]
+  },
+  {
+   "id": "sternschnuppe",
+   "kategorie": "Anlässe · Regenbogenbrücke",
+   "bedeutung": [
+    "Sternschnuppe"
+   ]
+  },
+  {
+   "id": "engelpfote",
+   "kategorie": "Anlässe · Regenbogenbrücke",
+   "bedeutung": [
+    "Engelchen"
+   ]
+  },
+  {
+   "id": "blume",
+   "kategorie": "Anlässe · Regenbogenbrücke",
+   "bedeutung": [
+    "Blume"
+   ]
+  },
+  {
+   "id": "schmetterling",
+   "kategorie": "Deko & Hinweise",
+   "bedeutung": [
+    "Schmetterling"
+   ]
+  },
+  {
+   "id": "blatt",
+   "kategorie": "Deko & Hinweise",
+   "bedeutung": [
+    "Blatt"
+   ]
+  },
+  {
+   "id": "schleife",
+   "kategorie": "Deko & Hinweise",
+   "bedeutung": [
+    "Schleife"
+   ]
+  },
+  {
+   "id": "pfeil",
+   "kategorie": "Deko & Hinweise",
+   "bedeutung": [
+    "Pfeil"
+   ]
+  },
+  {
+   "id": "ausruf",
+   "kategorie": "Deko & Hinweise",
+   "bedeutung": [
+    "Ausrufezeichen",
+    "wichtig"
+   ]
+  },
+  {
+   "id": "frage",
+   "kategorie": "Deko & Hinweise",
+   "bedeutung": [
+    "Fragezeichen",
+    "Fragen?"
+   ]
+  },
+  {
+   "id": "kreuz",
+   "kategorie": "Deko & Hinweise",
+   "bedeutung": [
+    "Kreuz",
+    "nicht geeignet"
+   ]
+  },
+  {
+   "id": "sternchen",
+   "kategorie": "Deko & Hinweise",
+   "bedeutung": [
+    "Sternchen"
+   ]
+  },
+  {
+   "id": "zickzack",
+   "kategorie": "Deko & Hinweise",
+   "bedeutung": [
+    "Zickzack"
+   ]
+  },
+  {
+   "id": "spirale",
+   "kategorie": "Deko & Hinweise",
+   "bedeutung": [
+    "Spirale"
+   ]
+  },
+  {
+   "id": "unterstrich",
+   "kategorie": "Deko & Hinweise",
+   "bedeutung": [
+    "Unterstreichung"
+   ]
+  },
+  {
+   "id": "kringel",
+   "kategorie": "Deko & Hinweise",
+   "bedeutung": [
+    "Kringel"
+   ]
+  }
+ ]
+}

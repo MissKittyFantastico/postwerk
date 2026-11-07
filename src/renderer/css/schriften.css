@@ -1,0 +1,16 @@
+/*
+ * Schriften des Designsets, in die Anwendung eingebaut (SIL Open Font License,
+ * Lizenztexte im Ordner schriften/). Keine Installation unter Windows nötig;
+ * jede Postwerk-Installation zeichnet mit denselben Dateien.
+ */
+@font-face { font-family: "Poppins"; src: url("../schriften/Poppins-Medium.ttf"); font-weight: 500; font-style: normal; }
+@font-face { font-family: "Poppins"; src: url("../schriften/Poppins-SemiBold.ttf"); font-weight: 600; font-style: normal; }
+@font-face { font-family: "Poppins"; src: url("../schriften/Poppins-Bold.ttf"); font-weight: 700; font-style: normal; }
+@font-face { font-family: "Poppins"; src: url("../schriften/Poppins-BoldItalic.ttf"); font-weight: 700; font-style: italic; }
+@font-face { font-family: "Poppins"; src: url("../schriften/Poppins-ExtraBold.ttf"); font-weight: 800; font-style: normal; }
+@font-face { font-family: "Poppins"; src: url("../schriften/Poppins-ExtraBoldItalic.ttf"); font-weight: 800; font-style: italic; }
+@font-face { font-family: "Nunito Sans"; src: url("../schriften/NunitoSans-Variable.ttf"); font-weight: 200 1000; font-style: normal; }
+@font-face { font-family: "Nunito Sans"; src: url("../schriften/NunitoSans-Italic-Variable.ttf"); font-weight: 200 1000; font-style: italic; }
+@font-face { font-family: "Space Mono"; src: url("../schriften/SpaceMono-Regular.ttf"); font-weight: 400; font-style: normal; }
+@font-face { font-family: "Space Mono"; src: url("../schriften/SpaceMono-Bold.ttf"); font-weight: 700; font-style: normal; }
+@font-face { font-family: "Space Mono"; src: url("../schriften/SpaceMono-BoldItalic.ttf"); font-weight: 700; font-style: italic; }

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101216">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Postwerk">
+<title>Postwerk</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="symbol-180.png">
+<link rel="icon" href="symbol-192.png">
+<style>
+  /* Farben wie am Rechner (src/renderer/css/app.css), für Finger bemessen */
+  :root {
+    --ink: #101216; --panel: #171B21; --panel-2: #1E232B; --panel-3: #272D37;
+    --line: #2F3641; --line-hell: #3E4653; --stage: #7C8189;
+    --text: #E9EBEF; --dim: #99A1AE; --mute: #6B7382;
+    --akzent: #3A5BFF; --akzent-hell: #7C93FF; --signal: #FFC94A; --ok: #3DD68C; --gefahr: #FF6B6B;
+    --r: 10px;
+    --oben: env(safe-area-inset-top, 0px); --unten: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; background: var(--ink); color: var(--text);
+    font: 16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; overscroll-behavior: none; }
+  /* Nur der Inhalt (main) scrollt; die Seite selbst hat die Höhe des sichtbaren Bildschirms
+     (dvh folgt der Adressleiste am iPhone). Sonst bekäme die Seite eine eigene Laufleiste. */
+  html, body { overflow: hidden; }
+  body { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+  main { min-height: 0; }
+  button, input, textarea, select { font: inherit; color: inherit; }
+  [hidden] { display: none !important; }
+
+  header { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 8px;
+    padding: calc(8px + var(--oben)) 12px 8px; background: var(--panel); border-bottom: 1px solid var(--line); min-height: 52px; }
+  header h1 { flex: 1; min-width: 0; margin: 0; font-size: 17px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  header h1 small { display: block; font-size: 11px; font-weight: 500; color: var(--dim); letter-spacing: .04em; }
+  /* Speicherstatus als Punkt (Text bleibt für Bildschirmleser): grün gesichert, gelb läuft, rot Fehler */
+  #speicherstatus { flex: none; width: 10px; height: 10px; border-radius: 50%; font-size: 0; overflow: hidden; background: transparent; }
+  #speicherstatus[data-stand="gespeichert"] { background: var(--ok); }
+  #speicherstatus[data-stand="offen"], #speicherstatus[data-stand="speichert"] { background: var(--signal); }
+  #speicherstatus[data-stand="fehler"] { background: var(--gefahr); }
+
+  main { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 12px calc(84px + var(--unten)); }
+  nav.unten { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; display: flex; background: var(--panel);
+    border-top: 1px solid var(--line); padding-bottom: var(--unten); }
+  nav.unten button { flex: 1; padding: 10px 0 12px; background: none; border: 0; color: var(--dim); font-size: 13px; }
+  nav.unten button[aria-current="true"] { color: var(--text); font-weight: 650; box-shadow: inset 0 3px 0 var(--akzent); }
+
+  a.knopf { color: var(--text); text-decoration: none; display: inline-flex; align-items: center; }
+  .knopf { min-height: 44px; padding: 0 16px; border-radius: var(--r); border: 1px solid var(--line-hell);
+    background: var(--panel-2); cursor: pointer; }
+  .knopf.haupt { background: var(--akzent); border-color: var(--akzent); color: #fff; font-weight: 650; }
+  .knopf.klein { min-height: 36px; padding: 0 12px; font-size: 14px; }
+  .knopf.still { background: none; border-color: transparent; }
+  .knopf.gefahr { color: var(--gefahr); }
+  .knopf:disabled { opacity: .45; }
+  .symbolknopf { width: 44px; height: 44px; border-radius: var(--r); border: 0; background: none; font-size: 20px; }
+  .symbolknopf:disabled { opacity: .3; }
+
+  h2.mikro { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin: 18px 2px 8px; font-weight: 600; }
+  .raster { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .raster > * { min-width: 0; }
+  header h1 span { display: block; overflow: hidden; text-overflow: ellipsis; }
+  .karte { display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r);
+    overflow: hidden; padding: 0; text-align: left; cursor: pointer; }
+  .karte .bild { background: var(--stage); display: flex; align-items: center; justify-content: center; padding: 8px; }
+  .karte b { display: block; padding: 8px 10px 0; font-size: 14px; line-height: 1.3; }
+  .karte small { display: block; padding: 2px 10px 10px; color: var(--dim); font-size: 12px; }
+  .miniatur { position: relative; overflow: hidden; background: #fff; flex: none; }
+  .miniatur > div { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 8px; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex: none; min-height: 36px; padding: 0 14px; border-radius: 18px; border: 1px solid var(--line-hell);
+    background: var(--panel-2); color: var(--text); font-size: 14px; }
+  .chip[aria-pressed="true"] { background: var(--akzent); border-color: var(--akzent); color: #fff; }
+  .chip small { color: inherit; opacity: .7; margin-left: 4px; }
+
+  .hinweis { background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; color: var(--dim); font-size: 14px; }
+  .leer { text-align: center; color: var(--dim); padding: 40px 20px; }
+
+  /* Studio */
+  .buehne { position: relative; margin: 0 auto; background: var(--stage); touch-action: none; user-select: none; -webkit-user-select: none; }
+  .buehne .inhalt { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  .buehne .griffe { position: absolute; inset: 0; }
+  .griff { position: absolute; border: 2px solid var(--akzent-hell); box-shadow: 0 0 0 1px rgba(0,0,0,.4); pointer-events: none; }
+  .griff i { position: absolute; width: 28px; height: 28px; border-radius: 50%; background: var(--akzent); border: 3px solid #fff;
+    pointer-events: auto; right: -15px; bottom: -15px; touch-action: none; }
+  .fangx, .fangy { position: absolute; background: #FF3EA5; pointer-events: none; }
+  .fangx { width: 1px; top: 0; bottom: 0; } .fangy { height: 1px; left: 0; right: 0; }
+  .buehnenrahmen { background: var(--stage); border-radius: var(--r); padding: 10px 0; margin: 0 -12px; }
+  .reiter { display: flex; gap: 4px; margin: 12px 0 10px; background: var(--panel-2); border-radius: var(--r); padding: 4px; }
+  .reiter button { flex: 1; min-height: 40px; border: 0; border-radius: 7px; background: none; color: var(--dim); font-size: 14px; }
+  .reiter button[aria-selected="true"] { background: var(--panel-3); color: var(--text); font-weight: 650; }
+  .feld { display: block; margin: 0 0 14px; }
+  .feld .name { display: flex; justify-content: space-between; font-size: 13px; color: var(--dim); margin-bottom: 4px; }
+  .feld textarea, .feld input[type=text] { width: 100%; min-height: 44px; padding: 10px 12px; border-radius: var(--r);
+    border: 1px solid var(--line-hell); background: var(--panel); resize: vertical; font-size: 16px; }
+  .feld .warn { color: var(--signal); font-size: 12px; margin-top: 4px; }
+  .fotofeld { display: flex; gap: 12px; align-items: center; padding: 10px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--r); margin-bottom: 10px; }
+  .fotofeld .vorschau { width: 64px; height: 64px; border-radius: 8px; background: var(--panel-3) center/cover; flex: none; }
+  .fotofeld .rechts { flex: 1; min-width: 0; }
+  .fotofeld .zeile { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  input[type=range] { width: 100%; accent-color: var(--akzent); }
+  .tasten { display: grid; grid-template-columns: repeat(3, 56px); gap: 6px; justify-content: center; margin: 10px 0; }
+  .tasten button { height: 48px; }
+  .ergebnis img { width: 100%; border-radius: var(--r); display: block; margin: 10px 0; }
+  .zeilen { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* Meldungen und Dialog (kern.js) */
+  #meldungen { position: fixed; left: 12px; right: 12px; top: calc(60px + var(--oben)); z-index: 20; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+  .meldung { background: var(--panel-3); border: 1px solid var(--line-hell); border-radius: var(--r); padding: 10px 14px; transition: opacity .2s; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+  .meldung b { display: block; } .meldung span { color: var(--dim); font-size: 14px; }
+  .meldung.gut { border-color: var(--ok); } .meldung.schlecht { border-color: var(--gefahr); } .meldung.warn { border-color: var(--signal); }
+  #schleier { position: fixed; inset: 0; z-index: 30; background: rgba(0,0,0,.55); display: none; align-items: flex-end; }
+  #schleier.offen { display: flex; }
+  #dialog { width: 100%; max-height: 85vh; overflow-y: auto; background: var(--panel); border-radius: 16px 16px 0 0;
+    padding: 18px 16px calc(16px + var(--unten)); border-top: 1px solid var(--line-hell); }
+  #dialog h3 { margin: 0 0 4px; font-size: 18px; } #dialog-unter { color: var(--dim); margin: 0 0 10px; font-size: 14px; }
+  #dialog-fuss { display: flex; flex-direction: column-reverse; gap: 8px; margin-top: 16px; }
+  #dialog-fuss .knopf { width: 100%; }
+
+  #laden { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: var(--ink); z-index: 40; color: var(--dim); }
+  #laden b { color: var(--text); font-size: 22px; }
+</style>
+</head>
+<body>
+<div id="laden"><b>Postwerk</b><span id="laden-text">Vorlagen werden geladen …</span></div>
+<header>
+  <button class="symbolknopf" id="zurueck" aria-label="Zurück" hidden>‹</button>
+  <h1 id="titel">Postwerk</h1>
+  <span id="speicherstatus" role="status"></span>
+  <button class="symbolknopf" id="widerrufen" aria-label="Rückgängig" hidden>↶</button>
+  <button class="symbolknopf" id="wiederholen" aria-label="Wiederholen" hidden>↷</button>
+</header>
+<main id="ansicht"></main>
+<nav class="unten" id="navigation">
+  <button data-ziel="vorlagen" aria-current="true">Vorlagen</button>
+  <button data-ziel="entwuerfe">Entwürfe</button>
+  <button data-ziel="info">Info</button>
+</nav>
+<div id="meldungen"></div>
+<div id="schleier"><div id="dialog"><h3 id="dialog-titel"></h3><p id="dialog-unter"></p><div id="dialog-rumpf"></div><div id="dialog-fuss"></div></div></div>
+<script type="module" src="src/mobil/oberflaeche.js"></script>
+</body>
+</html>
